@@ -12,6 +12,7 @@ flask-migrate = "*"
 flask-script = "*"
 flask-sqlalchemy = "*"
 "psycopg2" = "*"
+flask = "*"
 
 
 [dev-packages]
