@@ -10,6 +10,11 @@ db = SQLAlchemy(app)
 from models import Restaurant, MenuItem
 
 
+@app.route('/reaction')
+def reaction():
+    return render_template('reaction.html')
+
+
 @app.route('/restaurants/<int:restaurant_id>/menu/JSON')
 def restaurantMenuJSON(restaurant_id):
     restaurant = Restaurant.query.filter_by(id=restaurant_id).one()
