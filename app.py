@@ -32,6 +32,19 @@ def startPage():
     restaurants = Restaurant.query.all()
     return render_template('start.html', restaurants=restaurants)
 
+
+@app.route('/restaurants/new', methods=['GET', 'POST'])
+def newRestaurant():
+
+    if request.method == 'POST':
+        newRestaurant = Restaurant(name=request.form['name'])
+        db.session.add(newRestaurant)
+        db.session.commit()
+        return redirect(url_for('restaurantMenu', restaurant_id=newRestaurant.id))
+    else:
+        return render_template('newrestaurant.html')
+
+
 @app.route('/restaurants/<int:restaurant_id>/menu')
 def restaurantMenu(restaurant_id):
     restaurant = Restaurant.query.filter_by(id=restaurant_id).one()
