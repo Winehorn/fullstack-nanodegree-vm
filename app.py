@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from models import Restaurant, MenuItem
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://bogqbykwzimqsd:e6eaea3d18334060f6b48597c5b0aebd16' \
@@ -8,6 +7,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://bogqbykwzimqsd:e6eaea3d18334
                                         '.eu-west-1.compute.amazonaws.com:5432/d6694guijfle9c'
 
 db = SQLAlchemy(app)
+from models import Restaurant, MenuItem
 
 
 @app.route('/restaurants/<int:restaurant_id>/menu/JSON')
