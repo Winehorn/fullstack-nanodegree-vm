@@ -6,6 +6,7 @@ verify_ssl = true
 
 [packages]
 
+flask = "*"
 Flask-SQLAlchemy = "*"
 Flask-Script = "*"
 Flask-Migrate = "*"
