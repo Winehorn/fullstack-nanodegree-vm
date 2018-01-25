@@ -8,11 +8,10 @@ name = "pypi"
 [packages]
 
 alembic = "*"
-flask-migrate = "*"
-flask-script = "*"
-flask-sqlalchemy = "*"
+Flask-Migrate = "*"
+Flask-Script = "*"
+Flask-SQLAlchemy = "*"
 "psycopg2" = "*"
-flask = "*"
 
 
 [dev-packages]
