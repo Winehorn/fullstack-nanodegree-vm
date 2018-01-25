@@ -8,7 +8,7 @@ verify_ssl = true
 
 flask = "*"
 Flask-SQLAlchemy = "*"
-Flask-Script = "*"
+
 Flask-Migrate = "*"
 psycopg2 = "*"
 
