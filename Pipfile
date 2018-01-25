@@ -2,17 +2,17 @@
 
 url = "https://pypi.python.org/simple"
 verify_ssl = true
+name = "pypi"
 
 
 [packages]
 
-flask = "0.12.2"
-Flask-SQLAlchemy = "*"
-Flask-Script = "*"
-Flask-Migrate = "*"
-psycopg2 = "*"
+alembic = "*"
+flask-migrate = "*"
+flask-script = "*"
+flask-sqlalchemy = "*"
+"psycopg2" = "*"
 
 
-[requires]
+[dev-packages]
 
-python_version = "3.6"
