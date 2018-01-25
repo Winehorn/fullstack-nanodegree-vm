@@ -1,22 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from database_setup import Base, Restaurant, MenuItem
-import os
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://bogqbykwzimqsd:e6eaea3d18334060f6b48597c5b0aebd16' \
+                                        'ecbdc2eae25e9a494ea3fde9d17377@ec2-54-217-218-80' \
+                                        '.eu-west-1.compute.amazonaws.com:5432/d6694guijfle9c'
 
-engine = create_engine('sqlite:///restaurantmenu.db')
-Base.metadata.bind = engine
+db = SQLAlchemy(app)
 
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
-
+from models import Restaurant, MenuItem
 
 @app.route('/restaurants/<int:restaurant_id>/menu/JSON')
 def restaurantMenuJSON(restaurant_id):
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
-    items = session.query(MenuItem).filter_by(
+    restaurant = Restaurant.query.filter_by(id=restaurant_id).one()
+    items = MenuItem.query.filter_by(
         restaurant_id=restaurant_id).all()
     return jsonify(MenuItems=[i.serialize for i in items])
 
@@ -24,8 +21,8 @@ def restaurantMenuJSON(restaurant_id):
 # ADD JSON API ENDPOINT HERE
 @app.route('/restaurants/<int:restaurant_id>/menu/<int:menu_id>/JSON')
 def restaurantMenuItemJSON(restaurant_id, menu_id):
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
-    item = session.query(MenuItem).filter_by(
+    restaurant = Restaurant.query.filter_by(id=restaurant_id).one()
+    item = MenuItem.query.filter_by(
         id=menu_id).one()
     return jsonify(MenuItems=item.serialize)
 
@@ -33,8 +30,8 @@ def restaurantMenuItemJSON(restaurant_id, menu_id):
 @app.route('/')
 @app.route('/restaurants/<int:restaurant_id>/menu')
 def restaurantMenu(restaurant_id):
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
-    items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id)
+    restaurant = Restaurant.query.filter_by(id=restaurant_id).one()
+    items = MenuItem.query.filter_by(restaurant_id=restaurant_id)
     return render_template(
         'menu.html', restaurant=restaurant, items=items, restaurant_id=restaurant_id)
 
@@ -45,8 +42,8 @@ def newMenuItem(restaurant_id):
     if request.method == 'POST':
         newItem = MenuItem(name=request.form['name'], description=request.form[
                            'description'], price=request.form['price'], course=request.form['course'], restaurant_id=restaurant_id)
-        session.add(newItem)
-        session.commit()
+        db.session.add(newItem)
+        db.session.commit()
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
     else:
         return render_template('newmenuitem.html', restaurant_id=restaurant_id)
@@ -55,7 +52,7 @@ def newMenuItem(restaurant_id):
 @app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/edit',
            methods=['GET', 'POST'])
 def editMenuItem(restaurant_id, menu_id):
-    editedItem = session.query(MenuItem).filter_by(id=menu_id).one()
+    editedItem = MenuItem.query.filter_by(id=menu_id).one()
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -65,8 +62,8 @@ def editMenuItem(restaurant_id, menu_id):
             editedItem.price = request.form['price']
         if request.form['course']:
             editedItem.course = request.form['course']
-        session.add(editedItem)
-        session.commit()
+        db.session.add(editedItem)
+        db.session.commit()
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
     else:
 
@@ -77,15 +74,14 @@ def editMenuItem(restaurant_id, menu_id):
 @app.route('/restaurants/<int:restaurant_id>/<int:menu_id>/delete',
            methods=['GET', 'POST'])
 def deleteMenuItem(restaurant_id, menu_id):
-    itemToDelete = session.query(MenuItem).filter_by(id=menu_id).one()
+    itemToDelete = MenuItem.query.filter_by(id=menu_id).one()
     if request.method == 'POST':
-        session.delete(itemToDelete)
-        session.commit()
+        db.session.delete(itemToDelete)
+        db.session.commit()
         return redirect(url_for('restaurantMenu', restaurant_id=restaurant_id))
     else:
         return render_template('deleteconfirmation.html', item=itemToDelete)
 
 
 if __name__ == '__main__':
-    app.debug = True
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT')))
+    app.run()
